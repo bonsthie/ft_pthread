@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 14:11:15 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/04 18:17:18 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/06 18:57:00 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@ long			ft_syscall(long number, ...);
 #  define SYS_MACH_SEMAPHORE_WAIT 341
 #  define SYS_MACH_SEMAPHORE_SIGNAL 342
 #  define SYS_WRITE 4
+#  define SYS_MMAP 197
+#  define SYS_MUNMAP 73
+#  define SYS_MPROTECT 74
 
 # else
 #  define SYS_CLONE 56
@@ -49,6 +52,9 @@ long			ft_syscall(long number, ...);
 #  define SYS_RT_SIGPROCMASK 14
 #  define SYS_RT_SIGSUSPEND 15
 #  define SYS_WRITE 1
+#  define SYS_MMAP 9
+#  define SYS_MPROTECT 10
+#  define SYS_MUNMAP 11
 
 # endif
 
