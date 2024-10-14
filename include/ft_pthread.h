@@ -24,4 +24,7 @@ int						ft_pthread_create(t_pthread *__restrict__ thread,
 							void *(*start_routine)(void *),
 							void *__restrict__ arg);
 
+int ft_printf(const char *format, ...);
+void *ft_dlsym(void *handle, const char *symbol);
+
 #endif /* FT_PTHREAD_H */

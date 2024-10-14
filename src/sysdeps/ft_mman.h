@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:59:23 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/06 19:00:05 by babonnet         ###   ########.fr       */
+/*   Updated: 2024/10/13 16:02:37 by bonsthie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	ft_mprotect(void *addr, size_t len, int prot);
 # define PROT_NONE 0x0
 # define PROT_READ 0x1
 # define PROT_WRITE 0x2
+# define PROT_EXEC 0x4 
 # define PROT_RW (PROT_WRITE | PROT_READ)
 
 # define MAP_PRIVATE 0x02
