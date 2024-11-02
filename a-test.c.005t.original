@@ -1,0 +1,38 @@
+
+;; Function thread_routine (null)
+;; enabled by -tree-original
+
+
+{
+  printf ((const char * restrict) "%d\n", *(int *) data);
+  return 0B;
+}
+
+
+;; Function main (null)
+;; enabled by -tree-original
+
+
+{
+  struct t_pthread yes[100];
+  int thread_ids[100];
+
+    struct t_pthread yes[100];
+    int thread_ids[100];
+  {
+    int i = 0;
+
+        int i = 0;
+    goto <D.2401>;
+    <D.2400>:;
+    thread_ids[i] = i;
+    ft_pthread_create (&yes[i], 0B, thread_routine, (void * restrict) &thread_ids[i]);
+    i++ ;
+    <D.2401>:;
+    if (i <= 10) goto <D.2400>; else goto <D.2398>;
+    <D.2398>:;
+  }
+  return 0;
+}
+return 0;
+

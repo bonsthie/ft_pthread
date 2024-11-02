@@ -6,9 +6,11 @@
 #include <sys/types.h>
 #include "sysdeps/ft_sched.h"
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE 
 #include <sched.h>
 #include <unistd.h>
+
+extern int clone(int (*fn)(void *), void *child_stack, int flags, void *arg, ...);
 
 #define DEFAULT_STACK_SIZE 8192
 
@@ -42,7 +44,6 @@ static int start_thread(void *data)
 	t_pthread *thread;
 	void		*ret;
 
-	write(1, "aa\n", 3);
 	thread = data;
 	ret =  thread->routine(thread->arg);
 	(void)ret;
@@ -64,7 +65,7 @@ int	ft_pthread_create(t_pthread *__restrict__ thread,
 	thread->routine = start_routine;
 	thread->arg = arg;
 	int flags =  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
-	int tid = ft_clone(start_thread, stack + stack_size, flags, thread); 
+	int tid = clone(start_thread, stack + stack_size, flags, thread); 
 	if (tid < 0)
 	{
 		ft_munmap(stack, stack_size);

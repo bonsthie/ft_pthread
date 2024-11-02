@@ -2,7 +2,7 @@
 TARGET = libft_pthread.a
 
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -fPIC -g
+CFLAGS = -fPIC -g 
 
 SRCDIR = src
 OBJDIR = obj
