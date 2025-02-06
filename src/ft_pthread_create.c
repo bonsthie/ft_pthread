@@ -42,7 +42,6 @@ static int start_thread(void *data)
 	t_pthread *thread;
 	void		*ret;
 
-	write(1, "aa\n", 3);
 	thread = data;
 	ret =  thread->routine(thread->arg);
 	(void)ret;
@@ -64,11 +63,12 @@ int	ft_pthread_create(t_pthread *__restrict__ thread,
 	thread->routine = start_routine;
 	thread->arg = arg;
 	int flags =  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
-	int tid = ft_clone(start_thread, stack + stack_size, flags, thread); 
-	if (tid < 0)
+	printf("before clone %d\n", *(int *)arg);
+	thread->tid = ft_clone(start_thread, stack + stack_size, flags, thread); 
+	if (thread->tid < 0)
 	{
 		ft_munmap(stack, stack_size);
-		return (tid);
+		return (thread->tid);
 	}
 	return (1);
 }

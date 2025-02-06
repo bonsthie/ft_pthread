@@ -2,8 +2,11 @@
 # define FT_PTHREAD_H
 
 # include <stdint.h>
+# include <pthread.h>
+
 
 typedef void			*(*t_pthread_routine)(void *);
+
 
 typedef struct s_pthread_attr
 {
@@ -12,6 +15,7 @@ typedef struct s_pthread_attr
 
 typedef struct s_pthread
 {
+	int					tid;
 	t_pthread_attr		attr;
 	t_pthread_routine	routine;
 	void				*arg;
