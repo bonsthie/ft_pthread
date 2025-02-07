@@ -1,4 +1,5 @@
 #include "ft_pthread.h"
+#include "sysdeps/ft_futex.h"
 #include "sysdeps/ft_mman.h"
 #include <asm-generic/param.h>
 #include <stdint.h>
@@ -40,11 +41,12 @@ static void	*ft_pthread_create_stack(uint32_t stack_size)
 static int start_thread(void *data)
 {
 	t_pthread *thread;
-	void		*ret;
 
 	thread = data;
-	ret =  thread->routine(thread->arg);
-	(void)ret;
+	thread->thread_status = TH_RUNNING;
+	thread->ret =  thread->routine(thread->arg);
+	thread->thread_status = TH_JOINABLE;
+	ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
 	return (0);
 }
 

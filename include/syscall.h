@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 14:11:15 by babonnet          #+#    #+#             */
-/*   Updated: 2024/10/06 18:57:00 by babonnet         ###   ########.fr       */
+/*   Updated: 2025/02/07 16:49:18 by bonsthie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ long			ft_syscall(long number, ...);
 #  define SYS_MMAP 9
 #  define SYS_MPROTECT 10
 #  define SYS_MUNMAP 11
+#  define SYS_futex 202
+#  define SYS_gettid 186
 
 # endif
 

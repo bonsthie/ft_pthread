@@ -1,0 +1,9 @@
+#include "ft_pthread.h"
+#include "sysdeps/ft_futex.h"
+
+int ft_pthread_join(t_pthread *thread, void **value_ptr)
+{
+	ft_futex_wait((int *)&thread->thread_status, TH_RUNNING);
+	(void)value_ptr;
+	return (0);
+}
