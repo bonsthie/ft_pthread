@@ -1,11 +1,13 @@
 #include "ft_pthread.h"
 #include "sysdeps/ft_futex.h"
 #include "sysdeps/ft_mman.h"
+#include "sysdeps/ft_pthread_arch.h"
+#include "sysdeps/ft_sched.h"
 #include <asm-generic/param.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "sysdeps/ft_sched.h"
+#include "ft_pthread_log.h"
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -15,62 +17,73 @@
 
 static int get_stack_size(const t_pthread_attr *attr)
 {
-	if (attr)
-		return (attr->stack_size + 15) & ~15;
-	else
-		return (DEFAULT_STACK_SIZE);
-
+    if (attr)
+        return (attr->stack_size + 15) & ~15;
+    else
+        return (DEFAULT_STACK_SIZE);
 }
 
-static void	*ft_pthread_create_stack(uint32_t stack_size)
+static void *ft_pthread_create_stack(uint32_t stack_size)
 {
-	void	*stack;
+    void *stack;
 
-	stack = ft_mmap(NULL, stack_size, PROT_RW, MAP_PRIVATE | MAP_ANONYMOUS, -1,
-			0);
-	if (!stack)
-		return (NULL);
-	if (ft_mprotect(stack, EXEC_PAGESIZE, PROT_NONE) == -1)
-	{
-		ft_munmap(stack, stack_size);
-		return (NULL);
-	}
-	return (stack);
+    stack = ft_mmap(NULL, stack_size, PROT_RW, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (!stack)
+        return (NULL);
+    if (ft_mprotect(stack, EXEC_PAGESIZE, PROT_NONE) == -1)
+    {
+        ft_munmap(stack, stack_size);
+        return (NULL);
+    }
+    return (stack);
 }
 
 static int start_thread(void *data)
 {
-	t_pthread *thread;
+    t_pthread *thread;
 
-	thread = data;
-	thread->thread_status = TH_RUNNING;
-	thread->ret =  thread->routine(thread->arg);
-	thread->thread_status = TH_JOINABLE;
-	ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
-	return (0);
+    __set_tp((uintptr_t)data);
+    thread = data;
+	__ft_pthread_log_self("start thread pogger");
+    thread->thread_status = TH_RUNNING;
+    thread->ret = thread->routine(thread->arg);
+    thread->thread_status = TH_JOINABLE;
+	__ft_pthread_log_self("end thread");
+    /* ft_tsprintf("[%p](id : %d) end thread\n", thread, *(int *)thread->arg); */
+    ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
+    return (0);
 }
 
-int	ft_pthread_create(t_pthread *__restrict__ thread,
-		const t_pthread_attr *__restrict__ attr, void *(*start_routine)(void *),
-		void *__restrict__ arg)
+static void assign_thread_id(t_pthread *thread)
 {
-	void *stack;
-	uint32_t stack_size;
+    static int id = 0;
 
-	stack_size = get_stack_size(attr);
-	stack = ft_pthread_create_stack(stack_size);
-	if (!stack)
-		return (-1);
+    thread->id = id;
+    id++;
+}
 
-	thread->routine = start_routine;
-	thread->arg = arg;
-	int flags =  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
-	printf("before clone %d\n", *(int *)arg);
-	thread->tid = ft_clone(start_thread, stack + stack_size, flags, thread); 
-	if (thread->tid < 0)
-	{
-		ft_munmap(stack, stack_size);
-		return (thread->tid);
-	}
-	return (1);
+int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__restrict__ attr,
+                      void *(*start_routine)(void *), void *__restrict__ arg)
+{
+    void    *stack;
+    uint32_t stack_size;
+
+    stack_size = get_stack_size(attr);
+    stack = ft_pthread_create_stack(stack_size);
+    if (!stack)
+        return (-1);
+
+    assign_thread_id(thread);
+    thread->routine = start_routine;
+    thread->arg = arg;
+	__ft_pthread_log(thread, "prout");
+    int flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
+    ft_tsprintf("[%p](id : %d) before clone \n", thread, *(int *)thread->arg);
+    thread->tid = ft_clone(start_thread, stack + stack_size, flags, thread);
+    if (thread->tid < 0)
+    {
+        ft_munmap(stack, stack_size);
+        return (thread->tid);
+    }
+    return (1);
 }

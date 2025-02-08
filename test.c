@@ -5,30 +5,31 @@
 
 void *thread_routine(void *data)
 {
-	static pthread_mutex_t oui;
-	
-	sleep(2);
-	pthread_mutex_lock(&oui);
-	printf("yes %d at [%p]\n", *(int *)data, data);
-	pthread_mutex_unlock(&oui);
-	return (NULL);
+	int res;
+	res = 0;
+	for (int i = *(int *)data; i < 100000000; i++)
+		res += i;
+
+	sleep(5);
+	ft_tsprintf("routine %d at [%p]\n", *(int *)data, data);
+	return ((void *)(long)res);
 }
 
 int main()
 {
-	t_pthread yes[10];
-	int *thread_ids = malloc(10 * sizeof(int));
+	t_pthread yes[5];
+	int *thread_ids = malloc(5 * sizeof(int));
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 		thread_ids[i] = i;
 		ft_pthread_create(&yes[i], NULL, thread_routine, &thread_ids[i]);
 	}
 	
 
 
-	printf("caca\n");
-	for (int i = 0; i < 10; i++) {
-		printf("id %d == %p\n", thread_ids[i], &yes[i]);
+	ft_tsprintf("caca\n");
+	for (int i = 0; i < 5; i++) {
+		/* ft_tsprintf("id %d == %p\n", thread_ids[i], &yes[i]); */
 		ft_pthread_join(&yes[i], NULL);
 	}
 

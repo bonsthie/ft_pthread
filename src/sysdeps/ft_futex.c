@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ft_pthread.h>
 #include <stdatomic.h>
 #include <syscall.h>
 #include <time.h>
@@ -16,17 +17,17 @@ int ft_futex(int *uaddr, int futex_op, int val, const struct timespec *timeout, 
 
 int ft_futex_wait(int *uaddr, int val) 
 {
-	printf("thread is %s\n", TH_STATUS(val));
-    printf("Thread %ld waiting on futex [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr)));
+	/* ft_tsprintf("[futex] Thread is %s\n", TH_STATUS(val)); */
+    /* ft_tsprintf("[futex] Thread %p waiting on futex [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr))); */
 	int ret = ft_futex(uaddr, FUTEX_WAIT, val, NULL, NULL, 0);
-    printf("Thread %ld resume [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr)));
+    /* ft_tsprintf("[futex] Thread %p resume [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr))); */
 	return ret;
 }
 
 
 int ft_futex_wake(int *uaddr, int val) 
 {
-    printf("Thread %ld waking up [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr)));
+    /* ft_tsprintf("[futex] Thread %p waking up [value === %s]\n", ft_syscall(SYS_gettid), TH_STATUS(atomic_load((atomic_int *)uaddr))); */
 	return ft_futex(uaddr, FUTEX_WAKE, val, NULL, NULL, 0);
 }
 
