@@ -20,6 +20,7 @@ typedef struct s_pthread {
 	// need to be at offset 0 to store in %fs register
 	// for ft_pthread_self
 	struct s_pthread *self;
+
     // thread settings
     int               tid;
     int               id;

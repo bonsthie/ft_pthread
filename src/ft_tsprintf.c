@@ -2,18 +2,19 @@
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <unistd.h>
+
 
 int ft_tsprintf(const char *format, ...)
 {
-    static pthread_mutex_t oui;
-    va_list                lst;
+    char    print_buff[256];
+    va_list lst;
 
     va_start(lst, format);
-
-    pthread_mutex_lock(&oui);
-    int ret = vprintf(format, lst);
-    pthread_mutex_unlock(&oui);
-
+    int len = vsnprintf(print_buff, 256, format, lst);
     va_end(lst);
-    return ret;
+
+    write(2, print_buff, len);
+
+    return len;
 }

@@ -2,6 +2,7 @@
 #include "ft_pthread_arch.h"
 
 #if defined(__linux__) && (__x86_64__)
+
 uintptr_t __get_tp(void)
 {
 	uintptr_t	self;

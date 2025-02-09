@@ -1,13 +1,16 @@
 
 #include "ft_pthread.h"
+#include "ft_pthread_log.h"
 #include <stdarg.h>
 #include <stdio.h>
 
 static void __ft_pthread_vlog(t_pthread *thread, const char *msg, va_list arg)
 {
-    ft_tsprintf("[ft_pthread] Thread address: %p | Thread TID: %d | Message: %s\n", thread,
-                thread->id, msg);
-    (void)arg;
+	char msg_buff[256];
+
+	vsnprintf(msg_buff, 256, msg, arg);
+    ft_tsprintf("[ft_pthread] Thread address: %p | Thread ID: %d | Status %s | Message: %s\n", thread,
+                thread->id, TH_STATUS(thread), msg_buff);
 }
 
 /*

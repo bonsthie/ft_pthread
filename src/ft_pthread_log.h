@@ -1,5 +1,5 @@
 
-#include "ft_pthread.h"
+#include <ft_pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -10,6 +10,8 @@
 #    define ft_pthread_log(...)
 #    define ft_pthread_log_self(...)
 #endif
+
+#define TH_STATUS(x) x->thread_status == TH_RUNNING ? "TH_RUNNING" : "TH_JOINABLE"
 
 /*
  *  log the thread data with a thread safe print

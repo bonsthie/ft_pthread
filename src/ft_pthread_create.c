@@ -6,6 +6,7 @@
 #include <asm-generic/param.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include "ft_pthread_log.h"
 
@@ -13,7 +14,7 @@
 #include <sched.h>
 #include <unistd.h>
 
-#define DEFAULT_STACK_SIZE 8192
+#define DEFAULT_STACK_SIZE (8192 * 1024)
 
 static int get_stack_size(const t_pthread_attr *attr)
 {
@@ -43,14 +44,18 @@ int start_thread(void *data)
     t_pthread *thread;
 
     __set_tp((uintptr_t)data);
-    thread = data;
+
 	__ft_pthread_log_self("start thread pogger");
-    thread->thread_status = TH_RUNNING;
+
+	thread = data;
+	atomic_store_explicit(&thread->thread_status, TH_RUNNING, memory_order_release);
     thread->ret = thread->routine(thread->arg);
-    thread->thread_status = TH_JOINABLE;
 	__ft_pthread_log_self("end thread");
+	atomic_store_explicit(&thread->thread_status, TH_JOINABLE, memory_order_release);
+
     ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
-    return (0);
+
+    return 0;
 }
 
 static void assign_thread_id(t_pthread *thread)
@@ -67,22 +72,27 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
     void    *stack;
     uint32_t stack_size;
 
+	memset(thread, 0, sizeof(t_pthread));
 	thread->self = thread;
+	thread->routine = start_routine;
+	thread->arg = arg;
+    assign_thread_id(thread);
 	__ft_pthread_log(thread, "start create");
+
+
     stack_size = get_stack_size(attr);
     stack = ft_pthread_create_stack(stack_size);
     if (!stack)
         return (-1);
 
-    assign_thread_id(thread);
-    thread->routine = start_routine;
-    thread->arg = arg;
     int flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
     thread->tid = ft_clone(start_thread, stack + stack_size, flags, thread);
     if (thread->tid < 0)
     {
         ft_munmap(stack, stack_size);
+		__ft_pthread_log(thread, "fail create");
         return (thread->tid);
     }
-    return (1);
+	__ft_pthread_log(thread, "end create");
+    return (0);
 }

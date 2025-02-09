@@ -1,6 +1,7 @@
 #include "ft_pthread.h"
 #include "ft_pthread_log.h"
 #include "sysdeps/ft_futex.h"
+#include <errno.h>
 #include <stdio.h>
 
 int ft_pthread_join(t_pthread *thread, void **value_ptr)
@@ -15,6 +16,10 @@ int ft_pthread_join(t_pthread *thread, void **value_ptr)
             __ft_pthread_log(thread, "before wait");
             if (ft_futex_wait((int *)&thread->thread_status, current_state) == -1)
                 return 1;
+			if (errno != EAGAIN) {
+				__ft_pthread_log(thread, "join futex error [errno == EAGAIN]");
+				return 1;
+			}
             __ft_pthread_log(thread, "after wait");
         }
     }
