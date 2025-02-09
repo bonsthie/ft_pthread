@@ -11,7 +11,7 @@ void *thread_routine(void *data)
 		res += i;
 
 	sleep(5);
-	ft_tsprintf("routine %d at [%p]\n", *(int *)data, data);
+	/* ft_tsprintf("routine %d at [%p]\n", *(int *)data, data); */
 	return ((void *)(long)res);
 }
 
@@ -27,9 +27,7 @@ int main()
 	
 
 
-	ft_tsprintf("caca\n");
 	for (int i = 0; i < 5; i++) {
-		/* ft_tsprintf("id %d == %p\n", thread_ids[i], &yes[i]); */
 		ft_pthread_join(&yes[i], NULL);
 	}
 

@@ -38,7 +38,7 @@ static void *ft_pthread_create_stack(uint32_t stack_size)
     return (stack);
 }
 
-static int start_thread(void *data)
+int start_thread(void *data)
 {
     t_pthread *thread;
 
@@ -49,7 +49,6 @@ static int start_thread(void *data)
     thread->ret = thread->routine(thread->arg);
     thread->thread_status = TH_JOINABLE;
 	__ft_pthread_log_self("end thread");
-    /* ft_tsprintf("[%p](id : %d) end thread\n", thread, *(int *)thread->arg); */
     ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
     return (0);
 }
@@ -68,6 +67,8 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
     void    *stack;
     uint32_t stack_size;
 
+	thread->self = thread;
+	__ft_pthread_log(thread, "start create");
     stack_size = get_stack_size(attr);
     stack = ft_pthread_create_stack(stack_size);
     if (!stack)
@@ -76,9 +77,7 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
     assign_thread_id(thread);
     thread->routine = start_routine;
     thread->arg = arg;
-	__ft_pthread_log(thread, "prout");
     int flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD;
-    ft_tsprintf("[%p](id : %d) before clone \n", thread, *(int *)thread->arg);
     thread->tid = ft_clone(start_thread, stack + stack_size, flags, thread);
     if (thread->tid < 0)
     {
