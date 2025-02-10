@@ -45,13 +45,13 @@ int start_thread(void *data)
 
     __set_tp((uintptr_t)data);
 
-	__ft_pthread_log_self("start thread pogger");
+	ft_pthread_log_self("start thread pogger");
 
 	thread = data;
-	atomic_store_explicit(&thread->thread_status, TH_RUNNING, memory_order_release);
+	thread->thread_status = TH_RUNNING;
     thread->ret = thread->routine(thread->arg);
-	__ft_pthread_log_self("end thread");
-	atomic_store_explicit(&thread->thread_status, TH_JOINABLE, memory_order_release);
+	ft_pthread_log_self("end thread");
+	thread->thread_status = TH_JOINABLE;
 
     ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
 
@@ -77,7 +77,7 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
 	thread->routine = start_routine;
 	thread->arg = arg;
     assign_thread_id(thread);
-	__ft_pthread_log(thread, "start create");
+	ft_pthread_log(thread, "start create");
 
 
     stack_size = get_stack_size(attr);
@@ -90,9 +90,9 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
     if (thread->tid < 0)
     {
         ft_munmap(stack, stack_size);
-		__ft_pthread_log(thread, "fail create");
+		ft_pthread_log(thread, "fail create");
         return (thread->tid);
     }
-	__ft_pthread_log(thread, "end create");
+	ft_pthread_log(thread, "end create");
     return (0);
 }

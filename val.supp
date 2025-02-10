@@ -1,0 +1,21 @@
+{
+   <log>
+   Helgrind:Race
+   fun:__ft_pthread_log
+   obj:*
+}
+
+{
+   <log_self>
+   Helgrind:Race
+   fun:__ft_pthread_log_self
+   obj:*
+}
+
+
+{
+   <tsprintf>
+   Helgrind:Race
+   fun:__ft_tsprintf
+   obj:*
+}

@@ -7,42 +7,43 @@
 void *__thread_routine(void *data)
 {
 	int res;
-	__ft_pthread_log_self("start routine");
+	ft_pthread_log_self("start routine");
 	res = 0;
 	for (int i = *(int *)data; i < 10000010; i++)
 	{
 	  if (i % 1000000 == 0)
 		{
-			__ft_pthread_log_self("routine going i == %d", i);
+			ft_pthread_log_self("routine going i == %d", i);
 			sleep(1);
 		}
 		res += i;
 	}
 
-	__ft_pthread_log_self("end routine");
-	return ((void *)(long)res);
+	ft_pthread_log_self("end routine");
+	(void)res;
+	return NULL;
 }
 
 void *thread_routine(void *arg) {
-    int id = *((int *)arg);
+    /* int id = *((int *)arg); */
     
-    // Allocate memory for the result
-    int *result = malloc(sizeof(int));
-    if (!result) {
-        fprintf(stderr, "Failed to allocate memory in thread %d\n", id);
-        return NULL;
-    }
-    
+	/* ft_tsprintf("Thread[%d]: Hello World!\n", id); */
+	/* t_pthread *self = ft_pthread_self(); */
+	/* ft_tsprintf("%p %p %d %d\n", self, self->self, self->id, self->tid); */
+
     // For example, add 10 to the id (you can change the computation as needed)
-    *result = id + 10;
+	int *nb = arg;
+
+	*nb = *nb + 10;
     
     // Return the pointer to the result
-    return result;
+    return NULL;
 }
 
 int main(void) {
 	const int NUM_THREADS = 100;
 	t_pthread threads[NUM_THREADS];
+	//int thread_ids[NUM_THREADS];
 	
 	// Allocate an array to hold the thread id values.
 	int *thread_ids = malloc(NUM_THREADS * sizeof(int));
@@ -68,11 +69,7 @@ int main(void) {
 			fprintf(stderr, "Error joining thread %d\n", i);
 			continue;
 		}
-		if (retval) {
-			int result = *((int *)retval);
-			printf("Thread %d returned: %d\n", i, result);
-			free(retval);
-		}
+		/* printf("thread id after join %d\n", thread_ids[i]); */
 	}
 	
 	free(thread_ids);

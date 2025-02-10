@@ -2,7 +2,11 @@
 TARGET = libft_pthread.a
 
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -fPIC -g -D VERBOSE
+CFLAGS = -Wall -Wextra -Werror -fPIC -g
+
+ifeq ($(VERBOSE), true)
+	CFLAGS	+=	-D VERBOSE
+endif
 
 SRCDIR = src
 OBJDIR = obj

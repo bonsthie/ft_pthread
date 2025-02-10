@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#ifndef VERBOSE
+#ifdef VERBOSE
 #    define ft_pthread_log(...) __ft_pthread_log(__VA_ARGS__)
 #    define ft_pthread_log_self(...) __ft_pthread_log_self(__VA_ARGS__)
 #else

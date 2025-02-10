@@ -1,4 +1,3 @@
-
 #include "ft_pthread.h"
 #include "ft_pthread_log.h"
 #include <stdarg.h>
