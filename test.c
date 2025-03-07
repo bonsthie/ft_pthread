@@ -1,8 +1,16 @@
+#define _GNU_SOURCE
+
 #include "include/ft_pthread.h"
 #include "src/ft_pthread_log.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <sys/auxv.h>
+#include <stdlib.h>
+
 #include <unistd.h>
+
+/* __thread int ok = -1; */
 
 void *__thread_routine(void *data)
 {
@@ -30,6 +38,9 @@ void *thread_routine(void *arg) {
 	t_pthread *self = ft_pthread_self();
 	ft_tsprintf("%p %p %d %d\n", self, self->self, self->id, self->tid);
 
+	/* ft_tsprintf("thread value %d\n", ok); */
+	/* ok++; */
+
     // Allocate memory for the result
     int *result = malloc(sizeof(int));
     if (!result) {
@@ -46,6 +57,8 @@ void *thread_routine(void *arg) {
 }
 
 int main(void) {
+
+
 	const int NUM_THREADS = 1;//00;
 	t_pthread threads[NUM_THREADS];
 	//int thread_ids[NUM_THREADS];
@@ -56,6 +69,8 @@ int main(void) {
 		fprintf(stderr, "Failed to allocate memory for thread IDs\n");
 		return EXIT_FAILURE;
 	}
+	/* ft_tsprintf("thread value %d\n", ok); */
+	/* ok++; */
 	
 	// Create 10 threads.
 	for (int i = 0; i < NUM_THREADS; i++) {

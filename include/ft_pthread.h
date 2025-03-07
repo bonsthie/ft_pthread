@@ -16,10 +16,13 @@ typedef struct s_pthread_attr {
     uint32_t stack_size;
 } t_pthread_attr;
 
-typedef struct s_pthread {
+typedef uintptr_t t_pthread;
+
+typedef struct __pthread {
 	// need to be at offset 0 to store in %fs register
 	// for ft_pthread_self
 	struct s_pthread *self;
+	char tls[4096]; 
 
     // thread settings
     int               tid;
@@ -32,7 +35,7 @@ typedef struct s_pthread {
 
     void *arg;
     void *ret;
-} t_pthread;
+} __pthread;
 
 t_pthread *ft_pthread_self(void);
 

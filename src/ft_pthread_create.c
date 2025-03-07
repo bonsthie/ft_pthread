@@ -60,7 +60,7 @@ int start_thread(void *data)
 
 static void assign_thread_id(t_pthread *thread)
 {
-    static int id = 0;
+    static volatile int id = 0;
 
     thread->id = id;
     id++;

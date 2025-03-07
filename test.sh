@@ -1,6 +1,7 @@
 echo "compiling libft_pthread"
 make
 
+
 echo "compiling test"
 clang -nostdlib -static -g \
   -Iglibc_debug/include \
@@ -13,5 +14,5 @@ clang -nostdlib -static -g \
   -Lglibc_debug/lib \
   -Wl,--rpath=glibc_debug/lib \
   -Wl,--dynamic-linker=glibc_debug/lib/ld-linux-x86-64.so.2 \
-  -lc -lquadmath -lgcc_eh -lgcc -ldl \
+  -lpthread -lc -lquadmath -lgcc_eh -lgcc -ldl\
   -o test.out
