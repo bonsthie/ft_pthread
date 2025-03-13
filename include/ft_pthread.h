@@ -5,12 +5,6 @@
 #include <stdatomic.h>
 #include <stdint.h>
 
-typedef void *(*t_pthread_routine)(void *);
-
-enum thread_status {
-    TH_RUNNING,
-    TH_JOINABLE,
-};
 
 typedef struct s_pthread_attr {
     uint32_t stack_size;
@@ -18,24 +12,6 @@ typedef struct s_pthread_attr {
 
 typedef uintptr_t t_pthread;
 
-typedef struct __pthread {
-	// need to be at offset 0 to store in %fs register
-	// for ft_pthread_self
-	struct s_pthread *self;
-	char tls[4096]; 
-
-    // thread settings
-    int               tid;
-    int               id;
-    t_pthread_routine routine;
-    atomic_int        thread_status;
-    t_pthread_attr    attr;
-
-    // user settings
-
-    void *arg;
-    void *ret;
-} __pthread;
 
 t_pthread *ft_pthread_self(void);
 

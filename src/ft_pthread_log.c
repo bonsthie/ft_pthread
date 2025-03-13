@@ -1,9 +1,9 @@
-#include "ft_pthread.h"
+#include "__ft_pthread.h"
 #include "ft_pthread_log.h"
 #include <stdarg.h>
 #include <stdio.h>
 
-static void __ft_pthread_vlog(t_pthread *thread, const char *msg, va_list arg)
+static void __ft_pthread_vlog(__pthread *thread, const char *msg, va_list arg)
 {
 	char msg_buff[256];
 
@@ -20,7 +20,7 @@ void __ft_pthread_log(t_pthread *thread, const char *msg, ...)
     va_list lst;
 
     va_start(lst, msg);
-    __ft_pthread_vlog(thread, msg, lst);
+    __ft_pthread_vlog((__pthread *)*thread, msg, lst);
     va_end(lst);
 }
 
@@ -34,6 +34,6 @@ void __ft_pthread_log_self(const char *msg, ...)
     va_list    lst;
 
     va_start(lst, msg);
-    __ft_pthread_vlog(self, msg, lst);
+    __ft_pthread_vlog((__pthread *)*self, msg, lst);
     va_end(lst);
 }

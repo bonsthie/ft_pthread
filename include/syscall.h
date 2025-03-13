@@ -6,7 +6,7 @@
 /*   By: babonnet <babonnet@42angouleme.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 14:11:15 by babonnet          #+#    #+#             */
-/*   Updated: 2025/02/08 18:51:42 by babonnet         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:37:00 by babonnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ long ft_syscall(long number, ...);
 
 #else
 #    define SYS_CLONE 56
+#    define SYS_clone3 435
 #    define SYS_FUTEX 202
 #    define SYS_SET_TLS 234
 #    define SYS_EXIT 60

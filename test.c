@@ -12,7 +12,7 @@
 
 /* __thread int ok = -1; */
 
-void *__thread_routine(void *data)
+void *thread_routine(void *data)
 {
 	int res;
 	__ft_pthread_log_self("start routine");
@@ -28,38 +28,37 @@ void *__thread_routine(void *data)
 	}
 
 	__ft_pthread_log_self("end routine");
-	return NULL;
+	return (void *)(uintptr_t)res;
 }
 
-void *thread_routine(void *arg) {
+void *__thread_routine(void *arg) {
     int id = *((int *)arg);
     
 	ft_tsprintf("Thread[%d]: Hello World!\n", id);
-	t_pthread *self = ft_pthread_self();
-	ft_tsprintf("%p %p %d %d\n", self, self->self, self->id, self->tid);
+	/* t_pthread *self = ft_pthread_self(); */
 
 	/* ft_tsprintf("thread value %d\n", ok); */
 	/* ok++; */
 
     // Allocate memory for the result
-    int *result = malloc(sizeof(int));
-    if (!result) {
-        fprintf(stderr, "Failed to allocate memory in thread %d\n", id);
-        return NULL;
-    }
-	fprintf(stdout, "What %p (%p)\n", thread_routine, result);
+    /* int *result = malloc(sizeof(int)); */
+    /* if (!result) { */
+    /*     fprintf(stderr, "Failed to allocate memory in thread %d\n", id); */
+    /*     return NULL; */
+    /* } */
+	/* fprintf(stdout, "What %p (%p)\n", thread_routine, result); */
     
     // For example, add 10 to the id (you can change the computation as needed)
-    *result = id + 10;
+    /* *result = id + 10; */
     
     // Return the pointer to the result
-    return result;
+    return 0;
 }
 
 int main(void) {
 
 
-	const int NUM_THREADS = 1;//00;
+	const int NUM_THREADS = 100;//00;
 	t_pthread threads[NUM_THREADS];
 	//int thread_ids[NUM_THREADS];
 	
