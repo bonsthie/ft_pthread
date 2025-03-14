@@ -14,8 +14,10 @@
 
 void *thread_routine(void *data)
 {
+	write(2, "test\n", 5);
+	/* __ft_pthread_log_self("start routine"); */
 	int res;
-	__ft_pthread_log_self("start routine");
+	sleep(10);
 	res = 0;
 	for (int i = *(int *)data; i < 10000010; i++)
 	{
@@ -58,7 +60,7 @@ void *__thread_routine(void *arg) {
 int main(void) {
 
 
-	const int NUM_THREADS = 100;//00;
+	const int NUM_THREADS = 100;
 	t_pthread threads[NUM_THREADS];
 	//int thread_ids[NUM_THREADS];
 	
@@ -74,12 +76,16 @@ int main(void) {
 	// Create 10 threads.
 	for (int i = 0; i < NUM_THREADS; i++) {
 		thread_ids[i] = i;
+		ft_tsprintf("create thread %d\n", i);
 		if (ft_pthread_create(&threads[i], NULL, thread_routine, &thread_ids[i]) != 0) {
 			fprintf(stderr, "Error creating thread %d\n", i);
 			free(thread_ids);
 			return EXIT_FAILURE;
 		}
+		ft_tsprintf("end create thread %d\n", i);
+
 	}
+	sleep(100);
 	
 	// Join each thread and print its result.
 	for (int i = 0; i < NUM_THREADS; i++) {

@@ -15,10 +15,6 @@
 #include <sched.h>
 #include <unistd.h>
 
-#define DEFAULT_STACK_SIZE (8192 * 1024)
-#define ALIGN_SIZE 16
-#define ALIGN(x) (((x) + ALIGN_SIZE - 1) & ~(ALIGN_SIZE - 1))
-
 static int get_stack_size(const t_pthread_attr *attr)
 {
     if (attr)
@@ -34,11 +30,11 @@ static void *ft_pthread_create_stack(uint32_t stack_size)
     stack = ft_mmap(NULL, stack_size, PROT_RW, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (!stack)
         return (NULL);
-    if (ft_mprotect(stack, EXEC_PAGESIZE, PROT_NONE) == -1)
-    {
-        ft_munmap(stack, stack_size);
-        return (NULL);
-    }
+    /* if (ft_mprotect(stack, EXEC_PAGESIZE, PROT_NONE) == -1) */
+    /* { */
+    /*     ft_munmap(stack, stack_size); */
+    /*     return (NULL); */
+    /* } */
     return (stack);
 }
 
@@ -53,7 +49,6 @@ int start_thread(void *data)
     thread->ret = thread->routine(thread->arg);
     ft_pthread_log_self("end thread");
     thread->thread_status = TH_JOINABLE;
-
 
     ft_futex_wake((int *)&thread->thread_status, TH_JOINABLE);
 
@@ -73,29 +68,29 @@ static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
     int stack_size = get_stack_size(attr);
     int tls_size = 1024 * 1024; // TO CHANGE
 
-    int total_size = stack_size + tls_size + sizeof(__pthread);
+    int total_size = ALIGN(stack_size + tls_size + THREAD_SIZE);
 
     void *map = ft_pthread_create_stack(total_size);
-	if (map == NULL)
-		return 1;
+    if (map == NULL)
+        return 1;
 
-	*tp = map + total_size - sizeof(__pthread);
+    *tp = map;
     __pthread *new = *tp;
-	
-    memset(new, 0, sizeof(__pthread));
-	new->self = new;
 
-	new->mapped_size = total_size;
+    memset(new, 0, THREAD_SIZE);
+	new->tcb = new;
+    new->self = new;
+
+    new->mapped_size = total_size;
     new->mapped_region = map;
-    new->tls = (void *)((uintptr_t)new - tls_size);
+    new->tls = map + THREAD_SIZE;
     new->tls_size = tls_size;
+    memset(new->tls, 0, tls_size);
 
-    new->stack = (void *)ALIGN((uintptr_t)new->tls);
+    new->stack = map + total_size;
     new->stack_size = stack_size;
 
-
-
-	return 0;
+    return 0;
 }
 
 int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__restrict__ attr,
@@ -103,39 +98,97 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
 {
     __pthread *new;
 
-	ft_pthread_log(thread, "start create");
     int err = alloc_and_map_stack(&new, attr);
-	if (err == 1) {
-		//set errno and other;
-		return 1;
-	}
-	*thread = (t_pthread)new;
+    if (err == 1)
+    {
+        // set errno and other;
+        return 1;
+    }
+    *thread = (t_pthread) new;
 
     new->routine = start_routine;
     new->arg = arg;
     assign_thread_id(new);
 
-    int flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SYSVSEM | CLONE_SIGHAND | CLONE_THREAD |
-                CLONE_SETTLS;
+    ft_pthread_log(thread, "start create");
+
+    const int clone_flags = //
+
+        /*
+         * If CLONE_VM is set, parent and child share the same memory space; otherwise, the child
+         * gets a separate copy like fork.
+         */
+        (CLONE_VM
+
+         /*
+          * share the same filesystem information
+          * (if not set clone create a copy of the fs)
+          */
+         | CLONE_FS
+
+         /*
+          * share the same file descriptor table
+          */
+         | CLONE_FILES
+
+         /*
+          * makes the parent and child share System V semaphore adjustments, meaning semaphore
+          * changes affect both. Without it, the child gets a new, empty semaphore adjustment list.
+          */
+         | CLONE_SYSVSEM
+
+         /*
+          * parent and child share signal handlers but have separate signal masks and pending
+          * signals
+          */
+         | CLONE_SIGHAND
+
+         /*
+          * If CLONE_THREAD is set, the child joins the parent's thread group, sharing the same PID
+          * (TGID), signal disposition, and parent but maintaining a unique TID and signal mask.
+          */
+         | CLONE_THREAD
+
+         /*
+          * Set the TLS descriptor to .tls, with architecture-dependent
+          * interpretation. (x86_64 %fs register)
+          */
+         | CLONE_SETTLS
+
+         /*
+          * Store the child thread ID at .parent_tid in parent memory before
+          * returning to user space.
+          */
+         | CLONE_PARENT_SETTID
+
+         /*
+          * Clear and wake the futex at .child_tid in child memory on exit.
+          */
+         | CLONE_CHILD_CLEARTID //
+        );
 
     struct clone_args args = {
-        .flags = flags,
+        .flags = clone_flags,
         .pidfd = (uintptr_t)&new->tid,
         .parent_tid = (uintptr_t)&new->tid,
         .child_tid = (uintptr_t)&new->tid,
+
+        // pointer to the top of the stack for clone3() insted of
+        // the bottom for clone()
         .stack = (uintptr_t)new->stack,
         .stack_size = new->stack_size,
-        .tls = (uintptr_t)new->tls,
+
+        .tls = (uintptr_t)new,
     };
 
-	int tid = ft_clone3(start_thread, new, &args);
+    int tid = ft_clone3(start_thread, new, &args);
 
     if (tid == -1)
     {
-		ft_pthread_log(thread, "fail create");
+        ft_pthread_log(thread, "fail create");
         ft_munmap(new->mapped_region, new->mapped_size);
         return (-1);
     }
     ft_pthread_log(thread, "end create");
-	return 0;
+    return 0;
 }
