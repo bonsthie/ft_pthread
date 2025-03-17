@@ -12,28 +12,29 @@
 
 /* __thread int ok = -1; */
 
-void *thread_routine(void *data)
+void *__thread_routine(void *data)
 {
-	write(2, "test\n", 5);
+	write(1, "test\n", 5);
 	/* __ft_pthread_log_self("start routine"); */
-	int res;
-	sleep(10);
-	res = 0;
-	for (int i = *(int *)data; i < 10000010; i++)
-	{
-	  if (i % 1000000 == 0)
-		{
-			__ft_pthread_log_self("routine going i == %d", i);
-			sleep(1);
-		}
-		res += i;
-	}
+	/* int res; */
+	/* sleep(100); */
+	/* res = 0; */
+	/* for (int i = *(int *)data; i < 10000010; i++) */
+	/* { */
+	/*   if (i % 1000000 == 0) */
+	/* 	{ */
+	/* 		__ft_pthread_log_self("routine going i == %d", i); */
+	/* 		sleep(1); */
+	/* 	} */
+	/* 	res += i; */
+	/* } */
 
+	(void)data;
 	__ft_pthread_log_self("end routine");
-	return (void *)(uintptr_t)res;
+	return (void *)(uintptr_t)0;
 }
 
-void *__thread_routine(void *arg) {
+void *thread_routine(void *arg) {
     int id = *((int *)arg);
     
 	ft_tsprintf("Thread[%d]: Hello World!\n", id);
@@ -43,15 +44,15 @@ void *__thread_routine(void *arg) {
 	/* ok++; */
 
     // Allocate memory for the result
-    /* int *result = malloc(sizeof(int)); */
-    /* if (!result) { */
-    /*     fprintf(stderr, "Failed to allocate memory in thread %d\n", id); */
-    /*     return NULL; */
-    /* } */
-	/* fprintf(stdout, "What %p (%p)\n", thread_routine, result); */
+    int *result = malloc(sizeof(int));
+    if (!result) {
+        fprintf(stderr, "Failed to allocate memory in thread %d\n", id);
+        return NULL;
+    }
+	fprintf(stdout, "What %p (%p)\n", thread_routine, result);
     
     // For example, add 10 to the id (you can change the computation as needed)
-    /* *result = id + 10; */
+    *result = id + 10;
     
     // Return the pointer to the result
     return 0;
@@ -60,7 +61,7 @@ void *__thread_routine(void *arg) {
 int main(void) {
 
 
-	const int NUM_THREADS = 100;
+	const int NUM_THREADS = 5;
 	t_pthread threads[NUM_THREADS];
 	//int thread_ids[NUM_THREADS];
 	
@@ -85,7 +86,6 @@ int main(void) {
 		ft_tsprintf("end create thread %d\n", i);
 
 	}
-	sleep(100);
 	
 	// Join each thread and print its result.
 	for (int i = 0; i < NUM_THREADS; i++) {

@@ -1,4 +1,4 @@
-#include <syscall.h>
+#include <ft_syscall.h>
 #include "ft_pthread_arch.h"
 
 #if defined(__linux__) && (__x86_64__)

@@ -1,4 +1,4 @@
-#include <syscall.h>
+#include <ft_syscall.h>
 #include <stdatomic.h>
 
 #include "ft_futex.h"

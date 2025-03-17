@@ -42,6 +42,7 @@ int start_thread(void *data)
 {
     __pthread *thread;
 
+	write(1, "yo\n", 3);
     ft_pthread_log_self("start thread pogger");
 
     thread = data;
@@ -78,7 +79,7 @@ static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
     __pthread *new = *tp;
 
     memset(new, 0, THREAD_SIZE);
-	new->tcb = new;
+    new->tcb = new;
     new->self = new;
 
     new->mapped_size = total_size;
@@ -87,7 +88,7 @@ static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
     new->tls_size = tls_size;
     memset(new->tls, 0, tls_size);
 
-    new->stack = map + total_size;
+    new->stack = map + THREAD_SIZE + tls_size;
     new->stack_size = stack_size;
 
     return 0;
@@ -112,60 +113,78 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
 
     ft_pthread_log(thread, "start create");
 
-    const int clone_flags = //
+    const int clone_flags = CLONE_VM | CLONE_SIGHAND | CLONE_THREAD | CLONE_FS | CLONE_FILES |
+                            CLONE_SYSVSEM | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID |
+                            CLONE_SETTLS;
+    //         * If CLONE_VM is set, parent and child share the same memory space; otherwise, the
+    //         child
+    //         * gets a separate copy like fork.
+    //         */
+    //        (0 // CLONE_VM
+    //
+    //         /*
+    //          * share the same filesystem information
+    //          * (if not set clone create a copy of the fs)
+    //          */
+    //         | CLONE_FS
+    //
+    //         /*
+    //          * share the same file descriptor table
+    //          */
+    //         | CLONE_FILES
+    //
+    //         /*
+    //          * makes the parent and child share System V semaphore adjustments, meaning semaphore
+    //          * changes affect both. Without it, the child gets a new, empty semaphore adjustment
+    //          list.
+    //          */
+    //         | CLONE_SYSVSEM
+    //
+    //         /*
+    //          * parent and child share signal handlers but have separate signal masks and pending
+    //          * signals
+    //          */
+    //         | CLONE_SIGHAND
+    //
+    //         /*
+    //          * If CLONE_THREAD is set, the child joins the parent's thread group, sharing the
+    //          same PID
+    //          * (TGID), signal disposition, and parent but maintaining a unique TID and signal
+    //          mask.
+    //          */
+    //         | CLONE_THREAD
+    //
+    //         /*
+    //          * Set the TLS descriptor to .tls, with architecture-dependent
+    //          * interpretation. (x86_64 %fs register)
+    //          */
+    //         /* | CLONE_SETTLS */
+    //
+    //         /*
+    //          * Store the child thread ID at .parent_tid in parent memory before
+    //          * returning to user space.
+    //          */
+    //         | CLONE_PARENT_SETTID
+    //
+    //         /*
+    //          * Clear and wake the futex at .child_tid in child memory on exit.
+    //          */
+    //         | CLONE_CHILD_CLEARTID //
+    //        );
 
-        /*
-         * If CLONE_VM is set, parent and child share the same memory space; otherwise, the child
-         * gets a separate copy like fork.
-         */
-        (CLONE_VM
-
-         /*
-          * share the same filesystem information
-          * (if not set clone create a copy of the fs)
-          */
-         | CLONE_FS
-
-         /*
-          * share the same file descriptor table
-          */
-         | CLONE_FILES
-
-         /*
-          * makes the parent and child share System V semaphore adjustments, meaning semaphore
-          * changes affect both. Without it, the child gets a new, empty semaphore adjustment list.
-          */
-         | CLONE_SYSVSEM
-
-         /*
-          * parent and child share signal handlers but have separate signal masks and pending
-          * signals
-          */
-         | CLONE_SIGHAND
-
-         /*
-          * If CLONE_THREAD is set, the child joins the parent's thread group, sharing the same PID
-          * (TGID), signal disposition, and parent but maintaining a unique TID and signal mask.
-          */
-         | CLONE_THREAD
-
-         /*
-          * Set the TLS descriptor to .tls, with architecture-dependent
-          * interpretation. (x86_64 %fs register)
-          */
-         | CLONE_SETTLS
-
-         /*
-          * Store the child thread ID at .parent_tid in parent memory before
-          * returning to user space.
-          */
-         | CLONE_PARENT_SETTID
-
-         /*
-          * Clear and wake the futex at .child_tid in child memory on exit.
-          */
-         | CLONE_CHILD_CLEARTID //
-        );
+    /* struct clone_args args = { */
+    /*     .flags = clone_flags, */
+    /*     .pidfd = (uintptr_t)&new->tid, */
+    /*     .parent_tid = (uintptr_t)&new->tid, */
+    /*     .child_tid = (uintptr_t)&new->tid, */
+    /*  */
+    /*     // pointer to the top of the stack for clone3() insted of */
+    /*     // the bottom for clone() */
+    /*     .stack = (uintptr_t)new->stack, */
+    /*     .stack_size = new->stack_size, */
+    /*  */
+    /* .tls = (uintptr_t)new, */
+    /* }; */
 
     struct clone_args args = {
         .flags = clone_flags,
@@ -173,11 +192,8 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
         .parent_tid = (uintptr_t)&new->tid,
         .child_tid = (uintptr_t)&new->tid,
 
-        // pointer to the top of the stack for clone3() insted of
-        // the bottom for clone()
         .stack = (uintptr_t)new->stack,
         .stack_size = new->stack_size,
-
         .tls = (uintptr_t)new,
     };
 
