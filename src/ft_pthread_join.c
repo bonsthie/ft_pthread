@@ -14,17 +14,17 @@ int ft_pthread_join(t_pthread *thread, void **value_ptr)
 
         if (current_state != TH_JOINABLE)
         {
-            ft_pthread_log(tp, "before wait");
+            ft_pthread_log(thread, "before wait");
             if (ft_futex_wait((int *)&tp->thread_status, current_state) == -1)
                 return 1;
-            ft_pthread_log(tp, "after wait");
+            ft_pthread_log(thread, "after wait");
         }
     }
 
     if (value_ptr != NULL)
         *value_ptr = tp->ret;
 
-    ft_pthread_log(tp, "end join sucess");
+    ft_pthread_log(thread, "end join sucess");
 
     return 0;
 }
