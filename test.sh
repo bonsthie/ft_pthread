@@ -1,18 +1,22 @@
 echo "compiling libft_pthread"
-make
+make || { echo "libft_pthread compilation failed"; exit 1; }
 
+if [ -z "$LIBC_DIR_ABS" ]; then
+    echo "Error: LIBC_DIR_ABS is empty. Check the LIBC_DIR path."
+    exit 1
+fi
 
 echo "compiling test"
 clang -nostdlib -static -g \
-  -Iglibc_debug/include \
+  -I"$LIBC_DIR_ABS/include" \
   -Iinclude \
-  glibc_debug/lib/crt1.o \
-  glibc_debug/lib/crti.o \
+  "$LIBC_DIR_ABS/lib/crt1.o" \
+  "$LIBC_DIR_ABS/lib/crti.o" \
   test.c \
   libft_pthread.a \
-  glibc_debug/lib/crtn.o \
-  -Lglibc_debug/lib \
-  -Wl,--rpath=glibc_debug/lib \
-  -Wl,--dynamic-linker=glibc_debug/lib/ld-linux-x86-64.so.2 \
-  -lpthread -lc -lquadmath -lgcc_eh -lgcc -ldl\
+  "$LIBC_DIR_ABS/lib/crtn.o" \
+  -L"$LIBC_DIR_ABS/lib" \
+  -Wl,--rpath="$LIBC_DIR_ABS/lib" \
+  -Wl,--dynamic-linker="$LIBC_DIR_ABS/lib/ld-linux-x86-64.so.2" \
+  -lpthread -lc -lquadmath -lgcc_eh -lgcc -ldl \
   -o test.out
