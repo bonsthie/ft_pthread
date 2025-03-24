@@ -14,7 +14,7 @@ int ft_tsprintf(const char *format, ...)
     int len = vsnprintf(print_buff, 256, format, lst);
     va_end(lst);
 
-    write(2, print_buff, len);
+    (void)write(2, print_buff, len);
 
     return len;
 }

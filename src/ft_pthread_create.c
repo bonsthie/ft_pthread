@@ -42,7 +42,7 @@ int start_thread(void *data)
 {
     __pthread *thread;
 
-	write(1, "yo\n", 3);
+	(void)write(1, "yo\n", 3);
     ft_pthread_log_self("start thread pogger");
 
     thread = data;
@@ -67,7 +67,7 @@ static void assign_thread_id(__pthread *thread)
 static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
 {
     int stack_size = get_stack_size(attr);
-    int tls_size = 1024 * 1024; // TO CHANGE
+    int tls_size = 10 * 1024 * 1024; // TO CHANGE
 
     int total_size = ALIGN(stack_size + tls_size + THREAD_SIZE);
 
@@ -128,7 +128,7 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
         .tls = (uintptr_t)new,
     };
 
-    int tid = ft_clone3(start_thread, new, &args);
+    int tid = ft_clone3(&args, sizeof(args), start_thread, new);
 
     if (tid == -1)
     {

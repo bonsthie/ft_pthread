@@ -13,6 +13,6 @@
 
 int ft_clone(int (*fn)(void *), void *child_stack, int flags, void *arg);
 
-int ft_clone3(int (*fn)(void *), void *args, struct clone_args *clone_args);
+int ft_clone3(struct clone_args *cl_args, size_t cl_args_size, int (*fn)(void *args), void *args);
 
 #endif /* FT_SCHED_H */

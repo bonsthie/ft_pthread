@@ -14,7 +14,7 @@
 
 void *__thread_routine(void *data)
 {
-	write(1, "test\n", 5);
+	(void)write(1, "test\n", 5);
 	/* __ft_pthread_log_self("start routine"); */
 	/* int res; */
 	/* sleep(100); */

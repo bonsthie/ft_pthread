@@ -1,4 +1,3 @@
-# Define the target static library
 TARGET = libft_pthread.a
 
 CC = clang
@@ -12,9 +11,11 @@ SRCDIR = src
 OBJDIR = obj
 INCDIR = -I include
 
-# Find all .c source files and generate corresponding .o object files
+# Find all .c and .s source files and generate corresponding .o object files
 SRCS = $(shell find $(SRCDIR) -name '*.c')
+SRCS_ASM = $(shell find $(SRCDIR) -name '*.S')
 OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+OBJS += $(patsubst $(SRCDIR)/%.S, $(OBJDIR)/%.o, $(SRCS_ASM))
 
 OBJDIRS = $(sort $(dir $(OBJS)))
 
@@ -25,9 +26,13 @@ all: $(OBJDIRS) $(TARGET)
 $(TARGET): $(OBJS)
 	ar rcs $@ $(OBJS)
 
-# Compile source files into object files
+# Compile C source files into object files
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
+
+# Compile ASM source files into object files
+$(OBJDIR)/%.o: $(SRCDIR)/%.S
+	$(CC) -c $< -o $@
 
 # Create necessary object directories
 $(OBJDIRS):
