@@ -3,13 +3,13 @@
 #include "ft_pthread_log.h"
 #include "sysdeps/ft_futex.h"
 #include "sysdeps/ft_mman.h"
-#include "sysdeps/ft_pthread_arch.h"
 #include "sysdeps/ft_sched.h"
 #include <asm-generic/param.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include "_dl_glibc_wrapper.h"
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -75,7 +75,7 @@ static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
     if (map == NULL)
         return 1;
 
-    *tp = map;
+    *tp = map + tls_size;
     __pthread *new = *tp;
 
     memset(new, 0, THREAD_SIZE);
@@ -84,13 +84,16 @@ static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
 
     new->mapped_size = total_size;
     new->mapped_region = map;
-    new->tls = map + THREAD_SIZE;
+    new->tls = map;
     new->tls_size = tls_size;
     memset(new->tls, 0, tls_size);
 
     new->stack = map + THREAD_SIZE + tls_size;
     new->stack_size = stack_size;
 
+	if (_dl_allocate_tls(new) == NULL) {
+		printf("_dl_allocate_tls error\n");
+	}
     return 0;
 }
 

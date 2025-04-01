@@ -22,11 +22,12 @@ typedef struct __pthread {
     // for ft_pthread_self
     // change this part will break the ABI
     struct __pthread *tcb;
-    void             *tls;
+    void             *dtv;
     struct __pthread *self;
 
     // thread settings
     // will not break the ABI
+    void *tls;
     void *mapped_region;
     int   mapped_size;
     void *stack;

@@ -1,3 +1,4 @@
+#include <errno.h>
 #define _GNU_SOURCE
 
 #include "include/ft_pthread.h"
@@ -10,7 +11,7 @@
 
 #include <unistd.h>
 
-/* __thread int ok = -1; */
+__thread int ok = -1;
 
 void *__thread_routine(void *data)
 {
@@ -28,6 +29,7 @@ void *__thread_routine(void *data)
 	/* 	} */
 	/* 	res += i; */
 	/* } */
+
 
 	(void)data;
 	__ft_pthread_log_self("end routine");
@@ -53,6 +55,14 @@ void *thread_routine(void *arg) {
     
     // For example, add 10 to the id (you can change the computation as needed)
     *result = id + 10;
+
+	__ft_pthread_log_self("test tls with errno should print EBADF [9]");
+
+	(void)write(69, "rhaaaa", 2);
+
+	
+	__ft_pthread_log_self("errno %d", errno);
+	__ft_pthread_log_self("__thread var %d", ok);
     
     // Return the pointer to the result
     return 0;
@@ -61,7 +71,7 @@ void *thread_routine(void *arg) {
 int main(void) {
 
 
-	const int NUM_THREADS = 5;
+	const int NUM_THREADS = 3;
 	t_pthread threads[NUM_THREADS];
 	//int thread_ids[NUM_THREADS];
 	

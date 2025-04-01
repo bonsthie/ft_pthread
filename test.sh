@@ -19,16 +19,17 @@ if [ -z "$LIBC_DIR_ABS" ]; then
 fi
 
 echo "compiling test"
-clang -nostdlib -static -g \
+clang -nostdlib -g \
   -I"$LIBC_DIR_ABS/include" \
   -Iinclude \
   "$LIBC_DIR_ABS/lib/crt1.o" \
   "$LIBC_DIR_ABS/lib/crti.o" \
   test.c \
-  libft_pthread.a \
+  libft_pthread.so \
   "$LIBC_DIR_ABS/lib/crtn.o" \
   -L"$LIBC_DIR_ABS/lib" \
   -Wl,--rpath="$LIBC_DIR_ABS/lib" \
+  -Wl,--rpath=$(pwd) \
   -Wl,--dynamic-linker="$LIBC_DIR_ABS/lib/ld-linux-x86-64.so.2" \
   -lpthread -lc -lquadmath -lgcc_eh -lgcc -ldl \
   -o test.out

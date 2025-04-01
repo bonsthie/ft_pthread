@@ -1,4 +1,4 @@
-TARGET = libft_pthread.a
+TARGET = libft_pthread.so
 
 CC = clang
 CFLAGS = -Wall -Wextra -Werror -fPIC -g
@@ -22,9 +22,9 @@ OBJDIRS = $(sort $(dir $(OBJS)))
 # Default rule: Build the library
 all: $(OBJDIRS) $(TARGET)
 
-# Build the static library using ar
+# Rule to build shared library
 $(TARGET): $(OBJS)
-	ar rcs $@ $(OBJS)
+	$(CC) -shared -o $@ $(OBJS)
 
 # Compile C source files into object files
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
