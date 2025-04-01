@@ -16,19 +16,7 @@ __thread int ok = -1;
 void *__thread_routine(void *data)
 {
 	(void)write(1, "test\n", 5);
-	/* __ft_pthread_log_self("start routine"); */
-	/* int res; */
-	/* sleep(100); */
-	/* res = 0; */
-	/* for (int i = *(int *)data; i < 10000010; i++) */
-	/* { */
-	/*   if (i % 1000000 == 0) */
-	/* 	{ */
-	/* 		__ft_pthread_log_self("routine going i == %d", i); */
-	/* 		sleep(1); */
-	/* 	} */
-	/* 	res += i; */
-	/* } */
+
 
 
 	(void)data;
@@ -63,8 +51,24 @@ void *thread_routine(void *arg) {
 	
 	__ft_pthread_log_self("errno %d", errno);
 	__ft_pthread_log_self("__thread var %d", ok);
+
+	__ft_pthread_log_self("start routine");
+	int res;
+	res = 0;
+	for (int i = *(int *)arg; i < 100000; i++)
+	{
+	  if (i % 10000 == 0)
+		{
+			__ft_pthread_log_self("routine going i == %d", i);
+			sleep(1);
+		}
+		res += i;
+	}
+	ok = res;
+	__ft_pthread_log_self("__thread var %d", ok);
     
     // Return the pointer to the result
+
     return 0;
 }
 
