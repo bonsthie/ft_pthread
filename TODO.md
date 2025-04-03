@@ -1,4 +1,4 @@
-[ ] base mutex
+[x] base mutex
 [ ] full mutex attr
 [ ] pthread_exit
 [ ] setup pthread_cancel
