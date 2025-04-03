@@ -1,4 +1,9 @@
-/* slock func are simple optimise mutex witout protection */
+/*
+ * Minimal spinlock-style mutex functions.
+ * 
+ * Fast and lightweight, with no safety checks or protections.
+ * Use only in controlled environments.
+ */
 
 #include "__ft_pthread_mutex.h"
 #include "sysdeps/ft_futex.h"

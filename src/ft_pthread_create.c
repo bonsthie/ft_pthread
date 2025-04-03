@@ -6,7 +6,6 @@
 #include "sysdeps/ft_sched.h"
 #include <asm-generic/param.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include "_dl_glibc_wrapper.h"
@@ -15,7 +14,7 @@
 #include <sched.h>
 #include <unistd.h>
 
-static int get_stack_size(const t_pthread_attr *attr)
+static int get_stack_size(const __pthread_attr *attr)
 {
     if (attr)
         return ALIGN(attr->stack_size);
@@ -64,7 +63,7 @@ static void assign_thread_id(__pthread *thread)
     id++;
 }
 
-static int alloc_and_map_stack(__pthread **tp, const t_pthread_attr *attr)
+static int alloc_and_map_stack(__pthread **tp, const __pthread_attr *attr)
 {
     int stack_size = get_stack_size(attr);
     int tls_size = 10 * 1024 * 1024; // TO CHANGE
@@ -102,7 +101,10 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
 {
     __pthread *new;
 
-    int err = alloc_and_map_stack(&new, attr);
+	// TODO arg management
+	__pthread_attr *iattr = (__pthread_attr *)attr;
+
+    int err = alloc_and_map_stack(&new, iattr);
     if (err == 1)
     {
         // set errno and other;

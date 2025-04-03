@@ -2,6 +2,7 @@
 #define __FT_PTHREAD_H
 
 #include <ft_pthread.h>
+#include <stdatomic.h>
 #include <stdint.h>
 
 #define DEFAULT_STACK_SIZE (8192 * 1024)
@@ -16,6 +17,8 @@ enum thread_status {
     TH_RUNNING,
     TH_JOINABLE,
 };
+
+typedef struct __pthread_attr __pthread_attr;
 
 typedef struct __pthread {
     // need to be at offset 0 to store in %fs register
@@ -38,7 +41,7 @@ typedef struct __pthread {
     int               id;
     t_pthread_routine routine;
     atomic_int        thread_status;
-    t_pthread_attr    attr;
+    __pthread_attr    attr;
 
     // user settings
 

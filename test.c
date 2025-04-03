@@ -18,7 +18,6 @@ void *__thread_routine(void *data)
 	(void)write(1, "test\n", 5);
 
 
-
 	(void)data;
 	__ft_pthread_log_self("end routine");
 	return (void *)(uintptr_t)0;
@@ -114,6 +113,7 @@ int main(void) {
 			free(retval);
 		}
 	}
+
 	
 	free(thread_ids);
 	return EXIT_SUCCESS;
