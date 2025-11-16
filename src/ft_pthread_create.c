@@ -1,4 +1,5 @@
 #include "__ft_pthread.h"
+#include "_dl_glibc_wrapper.h"
 #include "ft_pthread.h"
 #include "ft_pthread_log.h"
 #include "sysdeps/ft_futex.h"
@@ -8,7 +9,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
-#include "_dl_glibc_wrapper.h"
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -41,7 +41,7 @@ int start_thread(void *data)
 {
     __pthread *thread;
 
-	(void)write(1, "yo\n", 3);
+    (void)write(1, "yo\n", 3);
     ft_pthread_log_self("start thread pogger");
 
     thread = data;
@@ -90,9 +90,10 @@ static int alloc_and_map_stack(__pthread **tp, const __pthread_attr *attr)
     new->stack = map + THREAD_SIZE + tls_size;
     new->stack_size = stack_size;
 
-	if (_dl_allocate_tls(new) == NULL) {
-		printf("_dl_allocate_tls error\n");
-	}
+    if (_dl_allocate_tls(new) == NULL)
+    {
+        printf("_dl_allocate_tls error\n");
+    }
     return 0;
 }
 
@@ -101,11 +102,10 @@ int ft_pthread_create(t_pthread *__restrict__ thread, const t_pthread_attr *__re
 {
     __pthread *new;
 
-	// TODO arg management
-	__pthread_attr *iattr = (__pthread_attr *)attr;
+    // TODO arg management
+    __pthread_attr *iattr = (__pthread_attr *)attr;
 
-    int err = alloc_and_map_stack(&new, iattr);
-    if (err == 1)
+    if (alloc_and_map_stack(&new, iattr) == 1)
     {
         // set errno and other;
         return 1;
